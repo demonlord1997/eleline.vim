@@ -253,8 +253,10 @@ function! s:StatusLine() abort
   let l:enc = ' %{&fenc != "" ? &fenc : &enc} | %{&bomb ? ",BOM " : ""}'
   let l:ff = '%{&ff} %*'
   let l:pct = '%#Eleline9# %P %*'
-  return l:prefix.l:tot.'%<'.l:fsize.l:common
-        \ .'%='.l:m_r_f.l:pos.l:enc.l:ff.l:pct
+  "return l:prefix.l:tot.'%<'.l:fsize.l:common
+        "\ .'%='.l:m_r_f.l:pos.l:enc.l:ff.l:pct
+  let l:common = l:paste.l:curfname.l:branch.' '.l:status.l:error.l:warning.l:tags.l:lcn.l:coc
+  return l:common.'%='.l:m_r_f.l:pos.l:fsize " .l:enc.l:ff.l:pct
 endfunction
 
 let s:colors = {
@@ -327,7 +329,7 @@ function! s:hi_statusline() abort
   call s:hi('ElelineTotalBuf'   , [178 , s:bg+8] , [240 , ''] )
   call s:hi('ElelinePaste'      , [232 , 178]    , [232 , 178]    , 'bold')
   call s:hi('ElelineFsize'      , [250 , s:bg+6] , [235 , ''] )
-  call s:hi('ElelineCurFname'   , [171 , s:bg+4] , [171 , '']     , 'bold' )
+  call s:hi('ElelineCurFname'   , [171 , s:bg+4] , [171 , '']     , 'italic' )
   call s:hi('ElelineGitBranch'  , [184 , s:bg+2] , [89  , '']     , 'bold' )
   call s:hi('ElelineGitStatus'  , [208 , s:bg+2] , [89  , ''])
   call s:hi('ElelineError'      , [197 , s:bg+2] , [197 , ''])
@@ -345,11 +347,11 @@ endfunction
 
 function! s:InsertStatuslineColor(mode) abort
   if a:mode ==# 'i'
-    call s:hi('ElelineBufnrWinnr' , [251, s:bg+8] , [251, s:bg+8])
+    call s:hi('ElelineCurFname' , [232, 178] , [251, 89])
   elseif a:mode ==# 'r'
-    call s:hi('ElelineBufnrWinnr' , [232, 160], [232, 160])
+    call s:hi('ElelineCurFname' , [232, 160], [232, 160])
   else
-    call s:hi('ElelineBufnrWinnr' , [232, 178], [89, ''])
+    call s:hi('ElelineCurFname' , [232, 140], [89, ''])
   endif
 endfunction
 
@@ -378,7 +380,7 @@ augroup eleline
   autocmd!
   autocmd User GitGutter,Startified,LanguageClientStarted call s:SetStatusLine()
   " Change colors for insert mode
-  autocmd InsertLeave * call s:hi('ElelineBufnrWinnr', [232, 178], [89, ''])
+  autocmd InsertLeave * call s:hi('ElelineCurFname', [236, 140], [89, ''])
   autocmd InsertEnter,InsertChange * call s:InsertStatuslineColor(v:insertmode)
   autocmd BufWinEnter,ShellCmdPost,BufWritePost * call s:SetStatusLine()
   autocmd FileChangedShellPost,ColorScheme * call s:SetStatusLine()
